@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+src/aisniffer/__init__.py
+src/aisniffer/cli.py
+src/aisniffer/wordlist.py
+src/aisniffer.egg-info/PKG-INFO
+src/aisniffer.egg-info/SOURCES.txt
+src/aisniffer.egg-info/dependency_links.txt
+src/aisniffer.egg-info/entry_points.txt
+src/aisniffer.egg-info/requires.txt
+src/aisniffer.egg-info/top_level.txt

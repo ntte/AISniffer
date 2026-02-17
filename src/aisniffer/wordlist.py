@@ -4,6 +4,10 @@ from pathlib import Path
 import random
 import re
 
+import os
+import json
+from openai import OpenAI
+
 COMMON_BASE = [
     "admin", "login", "logout", "dashboard", "panel", "manage",
     "api", "docs", "swagger", "openapi", "health", "status",
@@ -58,7 +62,7 @@ def generate_non_targeted_wordlist(size: int = 5000) -> list[str]:
 
     words = _dedupe_keep_order(words)
 
-    # If still not enough, pad with randomized combinations
+    # If still not enough, add randomized combinations
     while len(words) < size:
         a = random.choice(COMMON_BASE)
         b = random.choice(COMMON_BASE)
@@ -70,7 +74,7 @@ def generate_non_targeted_wordlist(size: int = 5000) -> list[str]:
 def generate_ai_wordlist_placeholder(keyword: str, max_words: int = 2000) -> list[str]:
     """
     Placeholder for LLM-based generation. For now: generate
-    keyword-centered permutations + nearby “webby” terms.
+    keyword-centered permutations +  nearby “webby” terms.
     """
     keyword = keyword.strip().lower()
     web_terms = [
@@ -79,7 +83,7 @@ def generate_ai_wordlist_placeholder(keyword: str, max_words: int = 2000) -> lis
     ]
 
     bases = [keyword]
-    # small heuristic variants
+    # small variants
     bases.extend([
         keyword.replace(" ", ""),
         keyword.replace(" ", "_"),
@@ -103,3 +107,23 @@ def generate_ai_wordlist_placeholder(keyword: str, max_words: int = 2000) -> lis
 def write_wordlist(words: list[str], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(words) + "\n", encoding="utf-8")
+
+
+
+
+def _sanitize_candidate(s: str) -> str | None:
+    s = s.strip()
+    if not s:
+        return None
+
+    # If the model outputs a full URL, strip scheme+host
+    s = re.sub(r"^https?://[^/]+", "", s).strip()
+
+    # allow word/path-like tokens only
+    if not re.fullmatch(r"[A-Za-z0-9/_\-.%]+", s):
+        return None
+
+    if s == "/":
+        return None
+
+    return s

@@ -48,7 +48,7 @@ def sniff(
     # Keyword path (AI targeted)
     keyword = choice
     # For now this is a placeholder; we’ll plug in an LLM client next.
-    words = generate_ai_wordlist_placeholder(keyword=keyword, max_words=max_words)
+    words = generate_ai_wordlist_llm(keyword=keyword, max_words=max_words, style="word")
     outfile = outdir / f"ai_{keyword.replace(' ', '_')}_{timestamp}.txt"
     write_wordlist(words, outfile)
     print(f"[green]Saved AI-targeted wordlist:[/green] {outfile} ([bold]{len(words)}[/bold] entries)")
